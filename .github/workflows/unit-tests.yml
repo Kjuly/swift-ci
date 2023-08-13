@@ -1,0 +1,73 @@
+
+name: Unit Tests
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        description: "Preferred runner OS"
+        required: false
+        default: ""
+        type: string
+      use_xcodebuild:
+        description: "Use xcodebuild to test or not"
+        required: false
+        default: false
+        type: boolean
+    secrets:
+      token:
+        description: "Token secrect"
+        required: false
+
+jobs:
+  pre-build:
+    runs-on: ubuntu-latest
+    outputs:
+      runner_os: ${{ steps.determine-runner-os.outputs.os }}
+    steps:
+      - name: Determine runner OS for unit tests
+        id: determine-runner-os
+        run: |
+          if [ ${{ inputs.os }} != "" ]; then
+            echo "os=${{ inputs.os }}" >> $GITHUB_OUTPUT
+          elif [ ${{ inputs.use_xcodebuild }} == true ]; then
+            echo "os=macos-latest" >> $GITHUB_OUTPUT
+          else
+            echo "os=ubuntu-latest" >> $GITHUB_OUTPUT
+          fi
+
+      - run: echo "Unit tests runner will be on ${{ steps.determine-runner-os.outputs.os }}"
+
+  unit-tests:
+    needs: pre-build
+    runs-on: ${{ needs.pre-build.outputs.runner_os }}
+    steps:
+      - run: echo "System is ${{ runner.os }}; Branch is ${{ github.ref }}; Scheme is ${{ github.event.repository.name }}"
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run git config
+        env: 
+          token: ${{ secrets.token }}
+        if: env.token != null
+        run: git config --global url."https://${{ env.token }}@github.com/".insteadOf "https://github.com/"
+
+      - name: Setup Xcode
+        if: inputs.use_xcodebuild
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "14.2"
+
+      - name: Run xcodebuild test
+        if: inputs.use_xcodebuild
+        run: >
+          xcodebuild test
+          -scheme ${{ github.event.repository.name }}
+          -sdk iphonesimulator
+          -destination "platform=iOS Simulator,name=iPhone 14 Pro"
+
+      - name: Run swift test
+        if: ${{ inputs.use_xcodebuild == false }}
+        run: swift test
+
