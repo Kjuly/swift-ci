@@ -10,7 +10,7 @@ on:
         default: ""
         type: string
       use_xcodebuild:
-        description: "Use xcodebuild to test or not"
+        description: "Use 'xcodebuild test'; if not, will use 'swift test'"
         required: false
         default: false
         type: boolean
