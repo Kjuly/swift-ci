@@ -41,17 +41,23 @@ jobs:
   unit-tests:
     needs: pre-build
     runs-on: ${{ needs.pre-build.outputs.runner_os }}
+    env: 
+      token: ${{ secrets.token }}
     steps:
       - run: echo "System is ${{ runner.os }}; Branch is ${{ github.ref }}; Scheme is ${{ github.event.repository.name }}"
 
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Run git config
-        env: 
-          token: ${{ secrets.token }}
+      - name: Run git config without token
+        if: env.token == null
+        run: git config --global url."https://github.com/".insteadOf "git@github.com:"
+
+      - name: Run git config with token
         if: env.token != null
-        run: git config --global url."https://${{ env.token }}@github.com/".insteadOf "https://github.com/"
+        run: |
+          git config --global url."https://${{ env.token }}@github.com/".insteadOf "git@github.com:"
+          git config --global url."https://${{ env.token }}@github.com/".insteadOf "https://github.com/" 
 
       - name: Setup Xcode
         if: inputs.use_xcodebuild
