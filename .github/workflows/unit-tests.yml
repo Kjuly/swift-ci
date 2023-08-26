@@ -69,6 +69,7 @@ jobs:
         if: inputs.use_xcodebuild
         run: >
           xcodebuild test
+          -quiet
           -scheme ${{ github.event.repository.name }}
           -sdk iphonesimulator
           -destination "platform=iOS Simulator,name=iPhone 14 Pro"
