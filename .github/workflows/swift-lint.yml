@@ -3,16 +3,47 @@ name: Swift Lint
 
 on:
   workflow_call:
+    inputs:
+      use_default_config:
+        description: "Whether use the default swiftlint.yml config file."
+        required: false
+        default: false
+        type: boolean
+      force_exclude:
+        description: "Whether exclude files in config `excluded` even if their paths are explicitly specified."
+        required: false
+        default: false
+        type: boolean
 
 jobs:
-  SwiftLint:
+  pre-build:
+    runs-on: ubuntu-latest
+    outputs:
+      swift_lint_args: ${{ steps.determine-swift-lint-args.outputs.args }}
+    steps:
+      - name: Determine args for Swift Lint
+        id: determine-swift-lint-args
+        run: |
+          args=""
+          if [ ${{ inputs.use_default_config }} == true ]; then
+            args+="--config https://raw.githubusercontent.com/Kjuly/scripts-xcode/main/swiftlint-default.yml"
+          fi
+          if [ ${{ inputs.force_exclude }} == true ]; then
+            args+=" --force-exclude"
+          fi
+          echo "args=$args" >> $GITHUB_OUTPUT
+
+      - run: echo "Swift Lint runner will use args '${{ steps.determine-swift-lint-args.outputs.args }}'"
+
+  swift-lint:
+    needs: pre-build
     runs-on: ubuntu-latest
     steps:
       - name: Check out
         uses: actions/checkout@v1
 
-      - name: Run SwiftLint
+      - name: Run swiftlint ${{ needs.pre-build.outputs.swift_lint_args }}
         uses: norio-nomura/action-swiftlint@3.2.1
         with:
-          args: --force-exclude
+          args: ${{ needs.pre-build.outputs.swift_lint_args }}
 
