@@ -16,6 +16,7 @@ jobs:
     uses: Kjuly/swift-ci/.github/workflows/unit-tests.yml@main
     with:
       use_xcodebuild: true
+      platforms: 'iOS,watchOS,macOS'
     secrets: # Required only if need to access a private repo.
       token: ${{ secrets.YOUR_GITHUB_ACTION_TOKEN }} # Replace the `YOUR_GITHUB_ACTION_TOKEN` with your own.
 
@@ -25,6 +26,7 @@ jobs:
 | -------------- | ------- | -------- |--- | ---
 | os             | string  | false    | "" (auto) | Preferred runner OS, e.g. "macos-latest", "ubuntu-latest".
 | use_xcodebuild | boolean | false    | false | Use 'xcodebuild test'; if not, will use 'swift test'.
+| platforms      | string  | false    | "iOS" | Paltform destinations to do testing, e.g. "iOS,watchOS,macOS".
 
 | Secrets (secrets) | Type    | Required | Description
 | ----------------- | ------- | -------- | ---

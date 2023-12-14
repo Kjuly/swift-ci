@@ -14,6 +14,11 @@ on:
         required: false
         default: false
         type: boolean
+      platforms:
+        description: "Paltform destinations to do testing (e.g., 'iOS,watchOS,macOS', default: 'iOS')."
+        required: false
+        default: "iOS"
+        type: string
     secrets:
       token:
         description: "Token secrect"
@@ -24,6 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       runner_os: ${{ steps.determine-runner-os.outputs.os }}
+      destinations: ${{ steps.determine-destinations.outputs.destinations }}
     steps:
       - name: Determine runner OS for unit tests
         id: determine-runner-os
@@ -36,7 +42,24 @@ jobs:
             echo "os=ubuntu-latest" >> $GITHUB_OUTPUT
           fi
 
+      - name: Determine destinations for xcodebuild test
+        id: determine-destinations
+        run: |
+          destinations=""
+          if [[ ${{ inputs.platforms }} == *"iOS"* ]]; then
+            destinations+="-destination 'platform=iphonesimulator,name=iPhone 14 Pro' "
+          fi
+          if [[ ${{ inputs.platforms }} == *"watchOS"* ]]; then
+            destinations+="-destination 'platform=watchsimulator,name=Apple Watch Series 8 (45mm)' "
+          fi
+          if [[ ${{ inputs.platforms }} == *"macOS"* ]]; then
+            destinations+="-destination platform=macOS"
+          fi
+          echo "destinations=$destinations" >> $GITHUB_OUTPUT
+
       - run: echo "Unit tests runner will be on ${{ steps.determine-runner-os.outputs.os }}"
+
+      - run: echo "${{ steps.determine-destinations.outputs.destinations }}"
 
   unit-tests:
     needs: pre-build
@@ -70,9 +93,9 @@ jobs:
         run: >
           xcodebuild test
           -quiet
+          -disable-concurrent-destination-testing
           -scheme ${{ github.event.repository.name }}
-          -sdk iphonesimulator
-          -destination "platform=iOS Simulator,name=iPhone 14 Pro"
+          ${{ needs.pre-build.outputs.destinations }}
 
       - name: Run swift test
         if: ${{ inputs.use_xcodebuild == false }}
