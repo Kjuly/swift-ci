@@ -86,7 +86,7 @@ jobs:
         if: inputs.use_xcodebuild
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "14.2"
+          xcode-version: "15.3"
 
       - name: Run xcodebuild test
         if: inputs.use_xcodebuild
