@@ -27,6 +27,7 @@ jobs:
 | os             | string  | false    | "" (auto) | Preferred runner OS, e.g. "macos-latest", "ubuntu-latest".
 | use_xcodebuild | boolean | false    | false | Use 'xcodebuild test'; if not, will use 'swift test'.
 | platforms      | string  | false    | "iOS" | Paltform destinations to do testing, e.g. "iOS,watchOS,macOS".
+| scheme         | string  | false    | (repo name) | The Xcode scheme for testing.
 
 | Secrets (secrets) | Type    | Required | Description
 | ----------------- | ------- | -------- | ---

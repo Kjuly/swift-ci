@@ -19,6 +19,11 @@ on:
         required: false
         default: "iOS"
         type: string
+      scheme:
+        description: "The Xcode scheme for testing."
+        required: false
+        default: ${{ github.event.repository.name }}
+        type: string
     secrets:
       token:
         description: "Token secrect"
@@ -67,7 +72,7 @@ jobs:
     env: 
       token: ${{ secrets.token }}
     steps:
-      - run: echo "System is ${{ runner.os }}; Branch is ${{ github.ref }}; Scheme is ${{ github.event.repository.name }}"
+      - run: echo "System is ${{ runner.os }}; Branch is ${{ github.ref }}; Scheme is ${{ inputs.scheme }}"
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -94,7 +99,7 @@ jobs:
           xcodebuild test
           -quiet
           -disable-concurrent-destination-testing
-          -scheme ${{ github.event.repository.name }}
+          -scheme ${{ inputs.scheme }}
           ${{ needs.pre-build.outputs.destinations }}
 
       - name: Run swift test
