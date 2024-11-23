@@ -52,7 +52,7 @@ jobs:
         run: |
           destinations=""
           if [[ ${{ inputs.platforms }} == *"iOS"* ]]; then
-            destinations+="-destination 'platform=iphonesimulator,name=iPhone 14 Pro' "
+            destinations+="-destination 'platform=iphonesimulator,name=iPhone 15 Pro' "
           fi
           if [[ ${{ inputs.platforms }} == *"watchOS"* ]]; then
             destinations+="-destination 'platform=watchsimulator,name=Apple Watch Series 8 (45mm)' "
