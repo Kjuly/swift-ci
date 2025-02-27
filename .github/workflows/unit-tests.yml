@@ -27,7 +27,7 @@ on:
       xcode_version:
         description: "Specify the Xcode version to use."
         required: false
-        default: "latest"
+        default: "16.1"
         type: string
       iphone_simulator:
         description: "The name of the iPhone simulator to do testing for iOS."
