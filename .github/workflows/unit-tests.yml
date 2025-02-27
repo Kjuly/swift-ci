@@ -14,20 +14,30 @@ on:
         required: false
         default: false
         type: boolean
-      xcode_version:
-        description: "Specify the Xcode version to use."
+      scheme:
+        description: "The Xcode scheme for testing."
         required: false
-        default: "latest"
+        default: ${{ github.event.repository.name }}
         type: string
       platforms:
         description: "Paltform destinations to do testing (e.g., 'iOS,watchOS,macOS', default: 'iOS')."
         required: false
         default: "iOS"
         type: string
-      scheme:
-        description: "The Xcode scheme for testing."
+      xcode_version:
+        description: "Specify the Xcode version to use."
         required: false
-        default: ${{ github.event.repository.name }}
+        default: "latest"
+        type: string
+      iphone_simulator:
+        description: "The name of the iPhone simulator to do testing for iOS."
+        required: false
+        default: "iPhone 16 Pro"
+        type: string
+      watch_simulator:
+        description: "The name of the Apple Watch simulator to do testing for watchOS."
+        required: false
+        default: "Apple Watch Series 10 (46mm)"
         type: string
     secrets:
       token:
@@ -57,10 +67,10 @@ jobs:
         run: |
           destinations=""
           if [[ ${{ inputs.platforms }} == *"iOS"* ]]; then
-            destinations+="-destination 'platform=iphonesimulator,name=iPhone 15 Pro' "
+            destinations+="-destination 'platform=iphonesimulator,name=${{ inputs.iphone_simulator }}' "
           fi
           if [[ ${{ inputs.platforms }} == *"watchOS"* ]]; then
-            destinations+="-destination 'platform=watchsimulator,name=Apple Watch Series 8 (45mm)' "
+            destinations+="-destination 'platform=watchsimulator,name=${{ inputs.watch_simulator }}' "
           fi
           if [[ ${{ inputs.platforms }} == *"macOS"* ]]; then
             destinations+="-destination platform=macOS"
