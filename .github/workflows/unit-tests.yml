@@ -112,7 +112,6 @@ jobs:
         if: inputs.use_xcodebuild
         run: >
           xcodebuild test
-          -quiet
           -disable-concurrent-destination-testing
           -scheme ${{ inputs.scheme }}
           ${{ needs.pre-build.outputs.destinations }}
